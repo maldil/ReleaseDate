@@ -1,0 +1,32 @@
+[{
+    "features" : ["F1","F2","F3"],
+    "feature_implimentation_time"  : [2,1,4],
+    "dependencies"  : [["F1","F2"],["F3","F2"]],
+    "sequential"  : [["F1","F2"],["F2","F3"]],
+    "developers"  : ["D1","D2","D3"],
+    "parallel_tasks": [],
+    "feature_developer"  : [["F1","D1"],["F2","D1"],["F1","D2"]]
+}, {
+    "features" : ["F1","F2","F3"],
+    "feature_implimentation_time"  : [2,1,4],
+    "dependencies"  : [["F1","F2"]],
+    "sequential"  : [["F1","F2"]],
+    "developers"  : ["D1","D2","D3"],
+    "parallel_tasks": [["F3","F2"]],
+    "feature_developer"  : [["F1","D1"],["F2","D1"],["F1","D2"]]
+}, {
+    "features" : ["F1","F2","F3"],
+    "feature_implimentation_time"  : [2,1,4],
+    "dependencies"  : [["F1","F2"],["F3","F2"]],
+    "sequential"  : [["F1","F2"],["F2","F3"]],
+    "parallel_tasks" : [["F1","F2"],["F2","F3"]],
+    "developers"  : ["D1","D2","D3"],
+    "feature_developer"  : [["F1","D1"],["F2","D1"],["F3","D1"]]
+}]
+
+
+
+
+
+
+

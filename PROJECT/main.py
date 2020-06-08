@@ -15,7 +15,7 @@ def process():
 
     domains = And(And(LE(Int(1), l),
                       GE(Int(10), l)) for l in letters)
-
+    print(domains,'domain')
     sum_hello = Plus(hello)
     sum_world = Plus(world)
 
