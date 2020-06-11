@@ -5,6 +5,28 @@ from tqdm import tqdm
 from time import sleep
 from datetime import datetime,timedelta
 import json
+import matplotlib.pyplot as plt
+import time
+
+def plot_result(x_, y_,satisfiable, xlabel,ylabel,filename):
+    plt.figure(num=1)
+    fig, ax = plt.subplots()
+
+    plt.scatter(x_, y_)
+    for x,y,s in zip(x_,y_,satisfiable):
+        plt.text(x,y,str(s))
+    # plt.title('performance')
+    # print(satisfiable)
+    # plt.text(x_,y_,satisfiable)
+    plt.text(0.8,0.95,"S:-satisfiable, U:-unsatisfiable",
+     horizontalalignment='center',
+     verticalalignment='center',
+     transform = ax.transAxes)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.savefig(filename, bbox_inches='tight')
+    plt.show()
+
 
 def error_handling(dependencies,sequential,feature_developer,feature_implimentation_time,features):
     assert len(features)==len(feature_implimentation_time), "You have to specify development time for all the features"
@@ -68,9 +90,10 @@ def iterate_to_find_satisfiable_solution(features, feature_implimentation_time, 
     max_end_time = sum(feature_implimentation_time)
     sloved = False
     for end in tqdm(range(max_end_time),'running binary search to find shortest release date'):
-        sleep(0.25)
+
         b_end_time = And(LE(fe['EndTime'], Int(end_time)) for fe in feature_time_map.values())
         formula = And(b_greater, b_impli_time, b_dependencies, b_sequential, b_dev_pararale, b_end_time,b_parallel)
+
         if is_sat(formula):
             print('\n'+'You have to spend at least',end_time, 'days to finish your next release')
             print('Therefore, the closest release date is :', (datetime.today() + timedelta(end_time)).strftime('%d/%m/%Y'))
@@ -86,19 +109,24 @@ def iterate_to_find_satisfiable_solution(features, feature_implimentation_time, 
     # print(is_sat(b_devlopers))
 
 
-    return
+    return len(formula.serialize()),'S' if is_sat(formula) else 'U'
 
 def process(features, feature_implimentation_time, dependencies, sequential, developers, feature_developer,parallel_tasks):
 
     end_time = 5
     error_handling(dependencies, sequential, feature_developer,feature_implimentation_time,features)
-    iterate_to_find_satisfiable_solution(features, feature_implimentation_time, dependencies, sequential, developers, feature_developer,parallel_tasks, end_time)
+    return iterate_to_find_satisfiable_solution(features, feature_implimentation_time, dependencies, sequential, developers, feature_developer,parallel_tasks, end_time)
 
 if __name__ == '__main__':
-    with open('./release_data.json','r') as file:
+    with open('./performance_data.json','r') as file:
         datas = json.loads(file.read())
     i=1
+    running_time = []
+    number_of_features = []
+    formula_size= []
+    satisfy = []
     for data in datas:
+        start_time = time.time()
         print('\n'+'#################Test Case',i,'#####################')
         features = data['features']
         feature_implimentation_time = data['feature_implimentation_time']
@@ -107,5 +135,13 @@ if __name__ == '__main__':
         developers = data['developers']
         feature_developer = data['feature_developer']
         parallel_tasks=data["parallel_tasks"]
-        process(features, feature_implimentation_time, dependencies, sequential, developers, feature_developer,parallel_tasks)
+        for_size,satisfiable = process(features, feature_implimentation_time, dependencies, sequential, developers, feature_developer,parallel_tasks)
+        formula_size.append(for_size)
+        satisfy.append(satisfiable)
+        number_of_features.append(len(features)+len(feature_implimentation_time)+len(dependencies)+len(sequential)+len(parallel_tasks)+len(feature_developer))
         i+=1
+        runtime = time.time() - start_time
+        running_time.append(runtime)
+    plot_result(formula_size,running_time,satisfy,'Size of formula','Run time in seconds','formula_size_runtime.pdf')
+    plot_result( number_of_features,running_time,satisfy, 'Number of variable', 'Run time in seconds', 'variables_runtime.pdf')
+    plot_result( number_of_features,formula_size,satisfy, 'Number of variable','formula size',  'variables_formula_size.pdf')

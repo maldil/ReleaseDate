@@ -1,6 +1,7 @@
 from pysmt.shortcuts import Symbol, LE, GE, Int, And, Equals, Plus, Solver, is_sat,Not, get_model
 from pysmt.typing import INT
 
+
 def process():
     varA = Symbol("A")
     varB = Symbol("B")
