@@ -1,5 +1,6 @@
 # ReleaseDate
 STM solver to decide release date
+
 Continuous delivery (CD) is a software engineering approach in which teams produce software in short cycles, ensuring that the software can be reliably released at any time. 
 The frequent release process that provides incremental updates to applications in production improves client satisfaction greatly. 
 Therefore, carefully deciding the release dates up to the final release date is always a NP hard problem due to the complex requirements.
